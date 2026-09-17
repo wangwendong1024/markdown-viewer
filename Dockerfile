@@ -12,6 +12,7 @@ RUN go mod download
 COPY *.go ./
 COPY auth_schema.sql ./
 COPY ui/login.html ./ui/login.html
+COPY ui/documents.html ./ui/documents.html
 COPY deploy/assets.go.txt ./bindata.go
 COPY --from=ui /src/ui/dist ./ui/dist
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /markdown-viewer .

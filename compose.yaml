@@ -10,7 +10,7 @@ services:
       - type: bind
         source: ${MARKDOWN_DOCS_DIR:?Set MARKDOWN_DOCS_DIR to an existing host directory}
         target: /docs
-        read_only: true
+        read_only: false
         bind:
           create_host_path: false
     read_only: true

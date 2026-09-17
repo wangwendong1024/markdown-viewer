@@ -27,4 +27,7 @@ The database must be outside the document root; Docker persists it in `auth-data
 
 The production UI uses same-origin API requests, including when Docker maps port
 3000 to a different host port. See [Docker deployment](deploy/README.md) for
-read-only document mounts, the Hackintosh deployment, verification and rollback.
+~~read-only document mounts~~, the Hackintosh deployment, verification and rollback.
+Document mounts are now writable for authenticated synchronization. The
+[document manager](/documents) supports same-path Markdown overwrite, historical
+content preview/download and restore. See [document synchronization](deploy/SYNC.md).

@@ -398,6 +398,8 @@ func (a *authStore) protect(next http.HandlerFunc, page bool) http.HandlerFunc {
 
 func (a *authStore) routes() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/documents", a.protect(documentPage, true))
+	mux.HandleFunc("/api/documents/", a.protect(a.documentAPI, false))
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			fail(w, 405, "请使用 GET")

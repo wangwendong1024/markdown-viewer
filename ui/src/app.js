@@ -43,7 +43,10 @@ function start() {
                 goToLogin(false)
             }).catch(() => { logout.disabled = false; logout.textContent = '退出失败，重试' })
         }
-        toolbar.append(username, expiry, logout)
+        const manage = document.createElement('a')
+        manage.href = '/documents'
+        manage.textContent = '文档管理'
+        toolbar.append(manage, username, expiry, logout)
         document.body.append(toolbar)
         $(document).ajaxError((event, xhr) => { if (xhr.status === 401) goToLogin() })
         const checkExpiry = () => {

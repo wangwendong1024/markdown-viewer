@@ -44,7 +44,9 @@
 
 Compose 命名卷 `auth-data` 映射到 `/data`。容器 UID/GID 为 65534，目录 0700、数据库
 0600。使用 WAL、5 秒 busy timeout、FULL synchronous 和单连接串行写入。根文件系统
-和文档挂载只读，数据库卷可写。不要执行 `docker compose down -v`，它会删除账号数据。
+~~和文档挂载只读，数据库卷可写。~~ 根文件系统只读，文档挂载和数据库卷可写，
+支持 [带历史版本的文档同步](SYNC.md)。不要执行 `docker compose down -v`，
+它会删除账号、会话与历史版本。所有登录账号共享文档的读写和恢复权限。
 
 当前 HTTP 不提供密码或 Cookie 的传输加密，限受信任局域网；HTTPS 反向代理应保留 Host，
 并启用 Secure Cookie。本实现不提供 MFA、找回密码邮件或按文档划分权限。
