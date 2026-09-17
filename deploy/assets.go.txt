@@ -1,0 +1,10 @@
+package main
+
+import "embed"
+
+//go:embed ui/dist/index.html ui/dist/built.js
+var webAssets embed.FS
+
+func Asset(name string) ([]byte, error) {
+	return webAssets.ReadFile(name)
+}

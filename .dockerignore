@@ -1,10 +1,12 @@
-.DS_Store
-.idea/
+.git
+.codegraph
 ui/node_modules
-**/dist
+ui/dist
+dist
 bindata.go
-data/
+data
 *.db
 *.db-wal
 *.db-shm
 .env
+deploy/documents

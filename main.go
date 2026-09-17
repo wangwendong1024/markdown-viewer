@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func home(w http.ResponseWriter, req *http.Request) {
@@ -31,7 +33,6 @@ func stat(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Fprint(w, jsonEncode(resp))
 }
 
@@ -41,12 +42,10 @@ func file(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Fprint(w, html)
 }
 
 func files(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Fprint(w, jsonEncode(getFiles(store.workingPath)))
 }
 
@@ -68,11 +67,29 @@ func forward(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", home)
-	http.HandleFunc("/stat", stat)
-	http.HandleFunc("/file", file)
-	http.HandleFunc("/files", files)
-	http.HandleFunc("/forward", forward)
-
-	http.ListenAndServe(":3000", nil)
+	auth, err := openAuthFromEnv()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer auth.db.Close()
+	if len(os.Args) == 3 && os.Args[1] == "--set-password" {
+		if err := auth.resetPasswordFromStdin(os.Args[2]); err != nil {
+			log.Fatal(err)
+		}
+		log.Print("Password updated; existing sessions revoked")
+		return
+	}
+	if len(os.Args) == 3 && os.Args[1] == "--create-user" {
+		if err := auth.createUserFromStdin(os.Args[2]); err != nil {
+			log.Fatal(err)
+		}
+		log.Print("User created")
+		return
+	}
+	store.workingPath = getArgument()
+	if err := validateDocumentRoot(store.workingPath, auth.dbPath); err != nil {
+		log.Fatal(err)
+	}
+	server := &http.Server{Addr: ":3000", Handler: auth.routes(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
+	log.Fatal(server.ListenAndServe())
 }

@@ -1,0 +1,10 @@
+.session-toolbar {
+    position: fixed; right: 24px; top: 10px; z-index: 100;
+    display: flex; align-items: center; gap: 14px; padding: 7px 12px;
+    background: #233c4a; color: #fff; border: 1px solid #45616e; border-radius: 8px;
+    font: 13px/1.5 "Segoe UI", "Microsoft YaHei", sans-serif;
+    .session-expiry { color: #c5d7df; font-size: 11px; }
+    button { padding: 4px 9px; border: 1px solid #73939f; border-radius: 4px; cursor: pointer; }
+    button:focus-visible { outline: 2px solid #9dd1e2; outline-offset: 2px; }
+}
+@media(max-width: 680px) { .session-toolbar { right: 12px; top: 6px; } .session-expiry { display: none; } }

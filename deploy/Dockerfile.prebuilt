@@ -1,0 +1,10 @@
+FROM alpine:3.22
+RUN mkdir -m 0700 /data && chown 65534:65534 /data
+COPY markdown-viewer /usr/local/bin/markdown-viewer
+USER 65534:65534
+ENV AUTH_DB_PATH=/data/auth.db
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -q -O /dev/null http://127.0.0.1:3000/healthz || exit 1
+ENTRYPOINT ["/usr/local/bin/markdown-viewer"]
+CMD ["/docs"]

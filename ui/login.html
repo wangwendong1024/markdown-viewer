@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>登录 · Markdown Viewer</title>
+<style>
+:root{color-scheme:light;--ink:#233c4a;--muted:#657b88;--accent:#176d80;--line:#d6e2e8;--paper:#fff;--wash:#edf4f7}
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.6 "Segoe UI","Microsoft YaHei",sans-serif;min-height:100vh;display:grid;place-items:center;padding:32px}
+.shell{width:min(960px,100%);display:grid;grid-template-columns:1fr 1fr;min-height:570px;background:var(--paper);box-shadow:0 20px 70px #284b6010;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.intro{padding:52px 44px;background:#e3eef3;display:flex;flex-direction:column;justify-content:space-between}.brand{font-weight:650;letter-spacing:.03em;display:flex;align-items:center;gap:12px}.mark{display:inline-grid;place-items:center;width:42px;height:42px;border:1px solid #adc5d0;border-radius:10px;font:bold 22px Georgia,serif}.intro h1{font:500 40px/1.4 Georgia,"SimSun",serif;margin:44px 0 18px}.intro p{color:var(--muted);max-width:280px}.paper{border-left:3px solid #7fa6b6;padding:12px 20px;margin:20px 0;color:#436777;font:15px/2 Consolas,monospace}.paper span{display:block}.caption{font-size:12px;letter-spacing:.08em;color:#657b88}
+.form-side{padding:58px 44px;display:flex;flex-direction:column;justify-content:center}h2{font-size:27px;letter-spacing:.02em;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;margin:0 0 30px}label{display:block;font-size:14px;font-weight:600;margin:20px 0 8px}input{width:100%;border:1px solid #becfd7;border-radius:7px;padding:12px 14px;font:inherit;background:#fbfdfe;color:var(--ink);outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #176d8018}.password{position:relative}.password input{padding-right:62px}.toggle{position:absolute;right:9px;top:10px;border:0;background:none;color:var(--accent);padding:5px;cursor:pointer;font:13px inherit}.submit{width:100%;margin-top:22px;padding:13px;border:0;border-radius:7px;background:var(--accent);color:white;font:600 16px "Segoe UI","Microsoft YaHei",sans-serif;cursor:pointer}.submit:hover{background:#115769}.submit:disabled{opacity:.6;cursor:wait}button:focus-visible{outline:3px solid #7ab4c8;outline-offset:3px}.error{min-height:26px;font-size:14px;color:#aa3737;margin-top:12px}.hint{font-size:12px;color:var(--muted);margin:14px 0 0}.back{font-size:12px;color:var(--muted)}
+@media(max-width:680px){body{padding:18px}.shell{grid-template-columns:1fr;min-height:auto}.intro{padding:24px}.intro h1,.intro p,.paper,.caption{display:none}.form-side{padding:32px 24px 38px}h2{font-size:24px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="intro"><div class="brand"><span class="mark">M↓</span>Markdown Viewer</div><div><h1>打开文档，<br>继续你的阅读。</h1><p>从目录到正文，让每一次查阅更专注。</p><div class="paper" aria-hidden="true"><span># 我的阅读空间</span><span>文档 · 代码 · 思路</span></div></div><div class="caption">YOUR DOCUMENTS, IN FOCUS</div></section>
+<section class="form-side"><h2>登录阅读空间</h2><p class="sub">使用你的账号访问文档。</p>
+<form id="login-form"><label for="username">用户名</label><input id="username" name="username" autocomplete="username" maxlength="64" required autofocus placeholder="请输入用户名">
+<label for="password">密码</label><div class="password"><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="72" placeholder="请输入密码"><button class="toggle" id="toggle" type="button" aria-label="显示密码">显示</button></div>
+<button class="submit" id="submit" type="submit">登录</button><div class="error" id="error" role="alert" aria-live="polite"></div></form>
+<p class="hint">账号由管理员创建。如需账号或重置密码，请联系管理员。</p><p class="back">登录到期后，需要重新验证身份。</p></section>
+</main>
+<script>
+const form=document.getElementById('login-form'),button=document.getElementById('submit'),message=document.getElementById('error'),password=document.getElementById('password');
+const params=new URLSearchParams(location.search);
+if(params.get('expired')==='1')message.textContent='登录已过期，请重新登录。';
+document.getElementById('toggle').onclick=function(){const show=password.type==='password';password.type=show?'text':'password';this.textContent=show?'隐藏':'显示';this.setAttribute('aria-label',show?'隐藏密码':'显示密码')};
+form.addEventListener('submit',async event=>{event.preventDefault();button.disabled=true;button.textContent='正在登录…';message.textContent='';try{const response=await fetch('/api/auth/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:form.username.value.trim(),password:password.value})});const data=await response.json();if(!response.ok)throw new Error(data.error||'登录失败，请重试');password.value='';let target=new URL(params.get('next')||'/',location.origin);if(target.origin!==location.origin||target.pathname==='/login'||target.pathname.startsWith('/api/'))target=new URL('/',location.origin);location.replace(target.pathname+target.search+target.hash)}catch(error){message.textContent=error instanceof TypeError?'无法连接服务器，请稍后重试。':error.message;button.disabled=false;button.textContent='登录'}});
+</script>
+</body></html>

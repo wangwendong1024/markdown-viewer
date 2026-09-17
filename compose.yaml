@@ -1,0 +1,26 @@
+services:
+  markdown-viewer:
+    build: .
+    image: markdown-viewer:local
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:${MARKDOWN_PORT:-18088}:3000"
+    volumes:
+      - auth-data:/data
+      - type: bind
+        source: ${MARKDOWN_DOCS_DIR:?Set MARKDOWN_DOCS_DIR to an existing host directory}
+        target: /docs
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      AUTH_DB_PATH: /data/auth.db
+      AUTH_TOKEN_TTL: ${AUTH_TOKEN_TTL:-8h}
+      AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+volumes:
+  auth-data:

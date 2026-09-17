@@ -51,6 +51,11 @@ module.exports = {
     devServer: {
         proxy: {
             '/forward': 'http://127.0.0.1:3000',
+            '/api': 'http://127.0.0.1:3000',
+            '/login': 'http://127.0.0.1:3000',
+            '/files': 'http://127.0.0.1:3000',
+            '/file': 'http://127.0.0.1:3000',
+            '/stat': 'http://127.0.0.1:3000',
         },
         historyApiFallback: {
             rewrites: [
